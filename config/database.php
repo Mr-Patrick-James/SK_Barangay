@@ -1,8 +1,8 @@
 <?php
 define('DB_PATH', __DIR__ . '/../data/barangay.db');
 define('BARANGAY_NAME', 'Barangay Bacungan');
-define('MUNICIPALITY', 'Municipality of Bacungan');
-define('PROVINCE', 'Province of Bacungan');
+define('MUNICIPALITY', 'Municipality of Naujan');
+define('PROVINCE', 'Oriental Mindoro');
 define('CAPTAIN_NAME', 'Hon. Juan Dela Cruz');
 
 function getDB(): PDO {

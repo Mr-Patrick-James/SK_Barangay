@@ -167,7 +167,7 @@ $eduOptions = [
                 <div class="col-md-5">
                     <label class="form-label">Address <span class="text-danger">*</span></label>
                     <input type="text" name="address" class="form-control"
-                           placeholder="Purok/Street, Barangay Bacungan"
+                           placeholder="Purok/Street, Barangay Bacungan, Naujan"
                            value="<?= htmlspecialchars($data['address']) ?>" required>
                 </div>
                 <div class="col-md-4">

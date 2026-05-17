@@ -1,6 +1,6 @@
 <?php
 require_once __DIR__ . '/config/auth.php';
-requireLogin();
+requireRole('Admin');
 require_once __DIR__ . '/config/database.php';
 $pageTitle = 'Dashboard';
 $rootPath = '';
@@ -10,8 +10,6 @@ $db = getDB();
 $totalResidents  = $db->query("SELECT COUNT(*) FROM residents")->fetchColumn();
 $totalOfficials  = $db->query("SELECT COUNT(*) FROM officials WHERE status='Active'")->fetchColumn();
 $totalCerts      = $db->query("SELECT COUNT(*) FROM certificates")->fetchColumn();
-$totalBlotter    = $db->query("SELECT COUNT(*) FROM blotter")->fetchColumn();
-$pendingBlotter  = $db->query("SELECT COUNT(*) FROM blotter WHERE status='Pending'")->fetchColumn();
 $certsThisMonth  = $db->query("SELECT COUNT(*) FROM certificates WHERE strftime('%Y-%m', issued_at) = strftime('%Y-%m', 'now')")->fetchColumn();
 $maleCount       = $db->query("SELECT COUNT(*) FROM residents WHERE gender='Male'")->fetchColumn();
 $femaleCount     = $db->query("SELECT COUNT(*) FROM residents WHERE gender='Female'")->fetchColumn();
@@ -19,8 +17,6 @@ $totalKK         = $db->query("SELECT COUNT(*) FROM kk_youth")->fetchColumn();
 $skVoters        = $db->query("SELECT COUNT(*) FROM kk_youth WHERE sk_voter='Yes'")->fetchColumn();
 $recentResidents = $db->query("SELECT * FROM residents ORDER BY created_at DESC LIMIT 5")->fetchAll();
 $recentCerts     = $db->query("SELECT c.*, r.first_name, r.last_name FROM certificates c LEFT JOIN residents r ON c.resident_id = r.id ORDER BY c.issued_at DESC LIMIT 5")->fetchAll();
-$recentBlotter   = $db->query("SELECT * FROM blotter ORDER BY created_at DESC LIMIT 5")->fetchAll();
-
 $certBreakdown = $db->query("SELECT cert_type, COUNT(*) as cnt FROM certificates GROUP BY cert_type")->fetchAll();
 
 include __DIR__ . '/includes/header.php';
@@ -28,7 +24,7 @@ include __DIR__ . '/includes/header.php';
 
 <!-- Stats Row -->
 <div class="row g-3 mb-4">
-    <div class="col-sm-6 col-xl-3">
+    <div class="col-sm-6 col-xl-4">
         <div class="card stat-card h-100">
             <div class="card-body d-flex align-items-center gap-3">
                 <div class="stat-icon" style="background:#dbeafe">
@@ -41,7 +37,7 @@ include __DIR__ . '/includes/header.php';
             </div>
         </div>
     </div>
-    <div class="col-sm-6 col-xl-3">
+    <div class="col-sm-6 col-xl-4">
         <div class="card stat-card h-100">
             <div class="card-body d-flex align-items-center gap-3">
                 <div class="stat-icon" style="background:#d1fae5">
@@ -54,7 +50,7 @@ include __DIR__ . '/includes/header.php';
             </div>
         </div>
     </div>
-    <div class="col-sm-6 col-xl-3">
+    <div class="col-sm-6 col-xl-4">
         <div class="card stat-card h-100">
             <div class="card-body d-flex align-items-center gap-3">
                 <div class="stat-icon" style="background:#fef3c7">
@@ -67,18 +63,6 @@ include __DIR__ . '/includes/header.php';
             </div>
         </div>
     </div>
-    <div class="col-sm-6 col-xl-3">
-        <div class="card stat-card h-100">
-            <div class="card-body d-flex align-items-center gap-3">
-                <div class="stat-icon" style="background:#fce7f3">
-                    <i class="bi bi-journal-text text-danger"></i>
-                </div>
-                <div>
-                    <div class="stat-number text-danger"><?= number_format($totalBlotter) ?></div>
-                    <div class="text-muted small">Blotter Records</div>
-                </div>
-            </div>
-        </div>
     </div>
 </div>
 
@@ -109,9 +93,6 @@ include __DIR__ . '/includes/header.php';
                     <span class="text-muted small">Certs This Month</span>
                     <span class="badge bg-warning text-dark"><?= $certsThisMonth ?></span>
                 </div>
-                <div class="d-flex justify-content-between mt-2">
-                    <span class="text-muted small">Pending Blotter</span>
-                    <span class="badge bg-danger"><?= $pendingBlotter ?></span>
                 </div>
                 <div class="d-flex justify-content-between mt-2">
                     <span class="text-muted small">KK Youth Members</span>
@@ -159,9 +140,6 @@ include __DIR__ . '/includes/header.php';
                 <a href="modules/certificates/issue.php" class="btn btn-outline-warning btn-sm">
                     <i class="bi bi-file-earmark-plus me-2"></i>Issue Certificate
                 </a>
-                <a href="modules/blotter/add.php" class="btn btn-outline-danger btn-sm">
-                    <i class="bi bi-journal-plus me-2"></i>File Blotter Report
-                </a>
                 <a href="modules/officials/add.php" class="btn btn-outline-success btn-sm">
                     <i class="bi bi-person-badge me-2"></i>Add Official
                 </a>
@@ -175,7 +153,7 @@ include __DIR__ . '/includes/header.php';
 
 <!-- Recent Records -->
 <div class="row g-3">
-    <div class="col-lg-6">
+    <div class="col-12">
         <div class="card content-card">
             <div class="card-header d-flex justify-content-between align-items-center">
                 <span><i class="bi bi-people me-2 text-primary"></i>Recent Residents</span>
@@ -203,41 +181,6 @@ include __DIR__ . '/includes/header.php';
             </div>
         </div>
     </div>
-    <div class="col-lg-6">
-        <div class="card content-card">
-            <div class="card-header d-flex justify-content-between align-items-center">
-                <span><i class="bi bi-journal-text me-2 text-danger"></i>Recent Blotter</span>
-                <a href="modules/blotter/index.php" class="btn btn-sm btn-outline-danger">View All</a>
-            </div>
-            <div class="card-body p-0">
-                <div class="table-responsive">
-                    <table class="table table-hover mb-0">
-                        <thead><tr><th>Complainant</th><th>Nature</th><th>Status</th></tr></thead>
-                        <tbody>
-                        <?php if (empty($recentBlotter)): ?>
-                            <tr><td colspan="3" class="text-center text-muted py-3">No blotter records yet.</td></tr>
-                        <?php else: ?>
-                            <?php foreach ($recentBlotter as $b): ?>
-                            <?php
-                                $statusClass = match($b['status']) {
-                                    'Resolved'  => 'bg-success-subtle text-success',
-                                    'Ongoing'   => 'bg-primary-subtle text-primary',
-                                    'Dismissed' => 'bg-secondary-subtle text-secondary',
-                                    default     => 'bg-warning-subtle text-warning',
-                                };
-                            ?>
-                            <tr>
-                                <td><?= htmlspecialchars($b['complainant']) ?></td>
-                                <td class="text-truncate" style="max-width:120px"><?= htmlspecialchars($b['nature']) ?></td>
-                                <td><span class="badge <?= $statusClass ?>"><?= htmlspecialchars($b['status']) ?></span></td>
-                            </tr>
-                            <?php endforeach; ?>
-                        <?php endif; ?>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
     </div>
 </div>
 

@@ -36,16 +36,47 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (empty($data['last_name']))  $errors[] = 'Last name is required.';
     if (empty($data['position']))   $errors[] = 'Position is required.';
 
+    $create_account = isset($_POST['create_account']);
+    $username = trim($_POST['username'] ?? '');
+    $password = $_POST['password'] ?? '';
+    if (empty($password)) $password = 'sk123';
+
+    if ($create_account) {
+        if (empty($username)) $errors[] = 'Username is required if creating an account.';
+        else {
+            $db = getDB();
+            $stmt = $db->prepare("SELECT COUNT(*) FROM users WHERE username = ?");
+            $stmt->execute([$username]);
+            if ($stmt->fetchColumn() > 0) $errors[] = 'Username already exists. Please choose another one.';
+        }
+    }
+
     if (empty($errors)) {
         $db = getDB();
-        $stmt = $db->prepare("
-            INSERT INTO officials (first_name, middle_name, last_name, position, term_start, term_end, contact, status)
-            VALUES (:first_name, :middle_name, :last_name, :position, :term_start, :term_end, :contact, :status)
-        ");
-        $stmt->execute($data);
-        $_SESSION['flash'] = ['type' => 'success', 'msg' => 'Official added successfully.'];
-        header('Location: index.php');
-        exit;
+        $db->beginTransaction();
+        try {
+            $stmt = $db->prepare("
+                INSERT INTO officials (first_name, middle_name, last_name, position, term_start, term_end, contact, status)
+                VALUES (:first_name, :middle_name, :last_name, :position, :term_start, :term_end, :contact, :status)
+            ");
+            $stmt->execute($data);
+            
+            if ($create_account) {
+                $role = (strpos($data['position'], 'SK') !== false) ? 'SK Official' : 'Admin';
+                $hash = password_hash($password, PASSWORD_DEFAULT);
+                $fullName = $data['first_name'] . ' ' . $data['last_name'];
+                $stmt = $db->prepare("INSERT INTO users (username, password, full_name, role) VALUES (?, ?, ?, ?)");
+                $stmt->execute([$username, $hash, $fullName, $role]);
+            }
+            
+            $db->commit();
+            $_SESSION['flash'] = ['type' => 'success', 'msg' => 'Official added successfully.'];
+            header('Location: index.php');
+            exit;
+        } catch (Exception $e) {
+            $db->rollBack();
+            $errors[] = 'Database error: ' . $e->getMessage();
+        }
     }
 }
 
@@ -113,6 +144,35 @@ include __DIR__ . '/../../includes/header.php';
                     <label class="form-label">Contact Number</label>
                     <input type="text" name="contact" class="form-control" value="<?= htmlspecialchars($data['contact']) ?>">
                 </div>
+
+                <hr class="mt-4 mb-2 text-secondary">
+                <h6 class="mb-3 text-primary"><i class="bi bi-shield-lock me-2"></i>Create User Account (Optional)</h6>
+                <div class="col-md-12 mb-2">
+                    <div class="form-check form-switch">
+                        <input class="form-check-input" type="checkbox" name="create_account" id="createAccount" <?= isset($_POST['create_account']) ? 'checked' : '' ?>>
+                        <label class="form-check-label fw-semibold" for="createAccount">Generate a login account for this official</label>
+                        <div class="form-text text-muted">SK Officials will automatically receive the "SK Official" role. Others will receive "Admin".</div>
+                    </div>
+                </div>
+                <div id="accountFields" class="row g-3 <?= isset($_POST['create_account']) ? '' : 'd-none' ?>">
+                    <div class="col-md-6">
+                        <label class="form-label">Username</label>
+                        <div class="input-group">
+                            <span class="input-group-text">@</span>
+                            <input type="text" name="username" class="form-control" value="<?= htmlspecialchars($_POST['username'] ?? '') ?>">
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Password</label>
+                        <input type="password" name="password" class="form-control" placeholder="Default: sk123">
+                    </div>
+                </div>
+
+                <script>
+                    document.getElementById('createAccount').addEventListener('change', function() {
+                        document.getElementById('accountFields').classList.toggle('d-none', !this.checked);
+                    });
+                </script>
 
                 <div class="col-12 d-flex gap-2 justify-content-end pt-2">
                     <a href="index.php" class="btn btn-outline-secondary">Cancel</a>

@@ -35,26 +35,46 @@ function initDB(PDO $pdo): void {
 
         CREATE TABLE IF NOT EXISTS kk_youth (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
+            -- Name
             first_name TEXT NOT NULL,
             middle_name TEXT,
             last_name TEXT NOT NULL,
             suffix TEXT,
+            -- Location (I. PROFILE)
+            region TEXT,
+            province TEXT,
+            city_municipality TEXT,
+            barangay TEXT,
+            purok TEXT,
+            -- Personal
             birthdate TEXT NOT NULL,
             gender TEXT NOT NULL,
+            age INTEGER,
             civil_status TEXT DEFAULT 'Single',
-            address TEXT NOT NULL,
-            contact TEXT,
             email TEXT,
+            contact TEXT,
+            home_address TEXT,
+            -- II. DEMOGRAPHIC CHARACTERISTICS
             youth_classification TEXT,
-            educational_status TEXT,
+            youth_age_group TEXT,
+            -- Education
+            educational_attainment TEXT,
             school_name TEXT,
-            employment_status TEXT,
+            -- Work
+            work_status TEXT,
             occupation TEXT,
-            sk_voter TEXT DEFAULT 'No',
+            -- Voter & Participation
+            registered_sk_voter TEXT DEFAULT 'No',
+            voted_last_sk_election TEXT DEFAULT 'No',
+            registered_national_voter TEXT DEFAULT 'No',
+            attended_kk_assembly TEXT DEFAULT 'No',
+            kk_assembly_times TEXT,
+            kk_assembly_no_reason TEXT,
+            -- Legacy / Extra fields
             skills TEXT,
             interests TEXT,
-            emergency_contact_name TEXT,
             emergency_contact_number TEXT,
+            is_archived INTEGER DEFAULT 0,
             created_at TEXT DEFAULT (datetime('now','localtime')),
             updated_at TEXT DEFAULT (datetime('now','localtime'))
         );
@@ -101,31 +121,73 @@ function initDB(PDO $pdo): void {
             FOREIGN KEY (resident_id) REFERENCES residents(id) ON DELETE SET NULL
         );
 
-        CREATE TABLE IF NOT EXISTS blotter (
+        CREATE TABLE IF NOT EXISTS activities (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
-            incident_date TEXT,
-            complainant TEXT NOT NULL,
-            respondent TEXT NOT NULL,
-            nature TEXT NOT NULL,
-            details TEXT,
-            status TEXT DEFAULT 'Pending',
-            action_taken TEXT,
-            recorded_by TEXT,
-            created_at TEXT DEFAULT (datetime('now','localtime')),
-            updated_at TEXT DEFAULT (datetime('now','localtime'))
+            title TEXT NOT NULL,
+            description TEXT,
+            activity_date TEXT NOT NULL,
+            status TEXT DEFAULT 'Ongoing',
+            created_at TEXT DEFAULT (datetime('now','localtime'))
         );
     ");
+
+    // ── Migrate existing kk_youth table: add new columns if they don't exist ──
+    $existingCols = array_column(
+        $pdo->query("PRAGMA table_info(kk_youth)")->fetchAll(),
+        'name'
+    );
+
+    $migrations = [
+        'region'                   => "ALTER TABLE kk_youth ADD COLUMN region TEXT",
+        'province'                 => "ALTER TABLE kk_youth ADD COLUMN province TEXT",
+        'city_municipality'        => "ALTER TABLE kk_youth ADD COLUMN city_municipality TEXT",
+        'barangay'                 => "ALTER TABLE kk_youth ADD COLUMN barangay TEXT",
+        'purok'                    => "ALTER TABLE kk_youth ADD COLUMN purok TEXT",
+        'age'                      => "ALTER TABLE kk_youth ADD COLUMN age INTEGER",
+        'home_address'             => "ALTER TABLE kk_youth ADD COLUMN home_address TEXT",
+        'youth_age_group'          => "ALTER TABLE kk_youth ADD COLUMN youth_age_group TEXT",
+        'educational_attainment'   => "ALTER TABLE kk_youth ADD COLUMN educational_attainment TEXT",
+        'work_status'              => "ALTER TABLE kk_youth ADD COLUMN work_status TEXT",
+        'registered_sk_voter'      => "ALTER TABLE kk_youth ADD COLUMN registered_sk_voter TEXT DEFAULT 'No'",
+        'voted_last_sk_election'   => "ALTER TABLE kk_youth ADD COLUMN voted_last_sk_election TEXT DEFAULT 'No'",
+        'registered_national_voter'=> "ALTER TABLE kk_youth ADD COLUMN registered_national_voter TEXT DEFAULT 'No'",
+        'attended_kk_assembly'     => "ALTER TABLE kk_youth ADD COLUMN attended_kk_assembly TEXT DEFAULT 'No'",
+        'kk_assembly_times'        => "ALTER TABLE kk_youth ADD COLUMN kk_assembly_times TEXT",
+        'kk_assembly_no_reason'    => "ALTER TABLE kk_youth ADD COLUMN kk_assembly_no_reason TEXT",
+        'is_archived'              => "ALTER TABLE kk_youth ADD COLUMN is_archived INTEGER DEFAULT 0",
+    ];
+
+    foreach ($migrations as $col => $sql) {
+        if (!in_array($col, $existingCols)) {
+            $pdo->exec($sql);
+        }
+    }
+
+    // Rename old columns via data copy for renamed fields
+    // educational_status -> educational_attainment (copy data if new col is empty)
+    if (in_array('educational_status', $existingCols) && in_array('educational_attainment', $existingCols)) {
+        $pdo->exec("UPDATE kk_youth SET educational_attainment = educational_status WHERE educational_attainment IS NULL OR educational_attainment = ''");
+    }
+    // employment_status -> work_status
+    if (in_array('employment_status', $existingCols) && in_array('work_status', $existingCols)) {
+        $pdo->exec("UPDATE kk_youth SET work_status = employment_status WHERE work_status IS NULL OR work_status = ''");
+    }
+    // address -> home_address
+    if (in_array('address', $existingCols) && in_array('home_address', $existingCols)) {
+        $pdo->exec("UPDATE kk_youth SET home_address = address WHERE home_address IS NULL OR home_address = ''");
+    }
+    // sk_voter -> registered_sk_voter
+    if (in_array('sk_voter', $existingCols) && in_array('registered_sk_voter', $existingCols)) {
+        $pdo->exec("UPDATE kk_youth SET registered_sk_voter = sk_voter WHERE registered_sk_voter IS NULL OR registered_sk_voter = ''");
+    }
 
     // Seed default admin user if empty
     $userCount = $pdo->query("SELECT COUNT(*) FROM users")->fetchColumn();
     if ($userCount == 0) {
         $stmt = $pdo->prepare("INSERT INTO users (username, password, full_name, role) VALUES (?, ?, ?, ?)");
-        $stmt->execute([
-            'admin',
-            password_hash('admin123', PASSWORD_DEFAULT),
-            'System Administrator',
-            'Admin'
-        ]);
+        $stmt->execute(['admin', password_hash('admin123', PASSWORD_DEFAULT), 'System Administrator', 'Admin']);
+        $stmt->execute(['sk_official', password_hash('sk123', PASSWORD_DEFAULT), 'SK Chairman', 'SK Official']);
+        $stmt->execute(['kk_member', password_hash('kk123', PASSWORD_DEFAULT), 'Katipunan Member', 'Katipunan Member']);
     }
 
     // Seed officials if empty

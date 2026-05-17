@@ -34,6 +34,14 @@ function isActive(string $path): string {
             </div>
         </div>
         <ul class="nav flex-column px-2 pb-3 mt-2">
+            <?php
+            $userRole = $currentUser['role'] ?? '';
+            $isAdmin = $userRole === 'Admin';
+            $isSK = $userRole === 'SK Official';
+            $isKK = $userRole === 'Katipunan Member';
+            ?>
+            
+            <?php if ($isAdmin): ?>
             <li class="nav-item">
                 <a href="<?= $rootPath ?? '' ?>index.php" class="nav-link <?= isActive('index.php') && !isActive('modules') ? 'active' : '' ?>">
                     <i class="bi bi-speedometer2 me-2"></i> Dashboard
@@ -52,11 +60,35 @@ function isActive(string $path): string {
                     <i class="bi bi-person-badge-fill me-2"></i> Officials
                 </a>
             </li>
+            <?php endif; ?>
+
+            <?php if ($isAdmin || $isSK): ?>
+            <?php if ($isSK): ?>
+            <li class="nav-item mt-1">
+                <span class="nav-section-label px-2">SK DASHBOARD</span>
+            </li>
+            <?php endif; ?>
             <li class="nav-item">
                 <a href="<?= $rootPath ?? '' ?>modules/kk_youth/index.php" class="nav-link <?= isActive('kk_youth') ? 'active' : '' ?>">
                     <i class="bi bi-stars me-2"></i> KK Youth Profiling
                 </a>
             </li>
+            <?php endif; ?>
+
+            <?php if ($isAdmin || $isKK || $isSK): ?>
+            <?php if ($isKK): ?>
+            <li class="nav-item mt-1">
+                <span class="nav-section-label px-2">KK DASHBOARD</span>
+            </li>
+            <?php endif; ?>
+            <li class="nav-item">
+                <a href="<?= $rootPath ?? '' ?>modules/activities/index.php" class="nav-link <?= isActive('activities') ? 'active' : '' ?>">
+                    <i class="bi bi-calendar-event me-2"></i> Ongoing Activities
+                </a>
+            </li>
+            <?php endif; ?>
+
+            <?php if ($isAdmin): ?>
             <li class="nav-item mt-1">
                 <span class="nav-section-label px-2">SERVICES</span>
             </li>
@@ -65,11 +97,15 @@ function isActive(string $path): string {
                     <i class="bi bi-file-earmark-text-fill me-2"></i> Certificates
                 </a>
             </li>
+            <li class="nav-item mt-1">
+                <span class="nav-section-label px-2">SYSTEM</span>
+            </li>
             <li class="nav-item">
-                <a href="<?= $rootPath ?? '' ?>modules/blotter/index.php" class="nav-link <?= isActive('blotter') ? 'active' : '' ?>">
-                    <i class="bi bi-journal-text me-2"></i> Blotter
+                <a href="<?= $rootPath ?? '' ?>modules/users/index.php" class="nav-link <?= isActive('users') ? 'active' : '' ?>">
+                    <i class="bi bi-shield-lock-fill me-2"></i> User Management
                 </a>
             </li>
+            <?php endif; ?>
         </ul>
         <div class="mt-auto px-3 pb-3">
             <small class="text-white-50">BMS v1.0 &copy; <?= date('Y') ?></small>

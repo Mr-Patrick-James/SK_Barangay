@@ -14,6 +14,30 @@ function requireLogin(): void {
     }
 }
 
+function requireRole($allowedRoles): void {
+    requireLogin();
+    $role = $_SESSION['role'] ?? '';
+    if (is_string($allowedRoles)) {
+        $allowedRoles = [$allowedRoles];
+    }
+    // Admin always has full access
+    if ($role === 'Admin') {
+        return;
+    }
+    if (!in_array($role, $allowedRoles)) {
+        // Redirect to their default page
+        $base = str_replace('login.php', '', getLoginUrl());
+        if ($role === 'Katipunan Member') {
+            header('Location: ' . $base . 'modules/activities/index.php');
+        } elseif ($role === 'SK Official') {
+            header('Location: ' . $base . 'modules/kk_youth/index.php');
+        } else {
+            header('Location: ' . $base . 'index.php');
+        }
+        exit;
+    }
+}
+
 function getLoginUrl(): string {
     // Determine the correct path to login.php based on current location
     $scriptPath = $_SERVER['SCRIPT_NAME'];

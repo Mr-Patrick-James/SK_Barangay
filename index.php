@@ -63,7 +63,6 @@ include __DIR__ . '/includes/header.php';
             </div>
         </div>
     </div>
-    </div>
 </div>
 
 <!-- Secondary Stats -->
@@ -92,7 +91,6 @@ include __DIR__ . '/includes/header.php';
                 <div class="d-flex justify-content-between">
                     <span class="text-muted small">Certs This Month</span>
                     <span class="badge bg-warning text-dark"><?= $certsThisMonth ?></span>
-                </div>
                 </div>
                 <div class="d-flex justify-content-between mt-2">
                     <span class="text-muted small">KK Youth Members</span>
@@ -180,7 +178,6 @@ include __DIR__ . '/includes/header.php';
                 </div>
             </div>
         </div>
-    </div>
     </div>
 </div>
 

@@ -25,8 +25,9 @@ function isActive(string $path): string {
     <!-- Sidebar -->
     <nav id="sidebar" class="sidebar d-flex flex-column flex-shrink-0 p-0">
         <div class="sidebar-header text-center py-3 px-2">
-            <div class="brgy-seal mb-2">
-                <i class="bi bi-shield-fill-check fs-1 text-warning"></i>
+            <div class="brgy-seal mb-2 d-flex justify-content-center gap-2">
+                <img src="<?= $rootPath ?? '' ?>assets/img/barangay.png" alt="Barangay Logo" style="width: 50px; height: 50px; object-fit: contain;">
+                <img src="<?= $rootPath ?? '' ?>assets/img/sk.png" alt="SK Logo" style="width: 50px; height: 50px; object-fit: contain;">
             </div>
             <div class="brgy-name fw-bold text-white lh-sm">
                 <?= BARANGAY_NAME ?><br>

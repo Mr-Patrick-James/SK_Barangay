@@ -149,8 +149,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <div class="login-card card">
             <!-- Header -->
             <div class="login-header">
-                <div class="login-seal">
-                    <i class="bi bi-shield-fill-check fs-2 text-warning"></i>
+                <div class="d-flex justify-content-center align-items-center gap-3 mb-3">
+                    <img src="assets/img/barangay.png" alt="Barangay Logo" style="width: 75px; height: 75px; object-fit: contain; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.2));">
+                    <img src="assets/img/sk.png" alt="SK Logo" style="width: 75px; height: 75px; object-fit: contain; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.2));">
                 </div>
                 <h5 class="text-white fw-bold mb-0"><?= BARANGAY_NAME ?></h5>
                 <small class="text-white-50"><?= MUNICIPALITY ?>, <?= PROVINCE ?></small>

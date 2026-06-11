@@ -42,6 +42,12 @@ include __DIR__ . '/../../includes/header.php';
 <div class="page-header">
     <h4><i class="bi bi-person-badge me-2"></i>KK Youth Profile</h4>
     <div class="d-flex gap-2">
+        <a href="print_pdf.php?id=<?= $y['id'] ?>" class="btn btn-danger btn-sm">
+            <i class="bi bi-file-pdf me-1"></i>Download PDF
+        </a>
+        <a href="print.php?id=<?= $y['id'] ?>" target="_blank" class="btn btn-warning btn-sm">
+            <i class="bi bi-printer me-1"></i>Print Form
+        </a>
         <a href="edit.php?id=<?= $y['id'] ?>" class="btn btn-primary btn-sm">
             <i class="bi bi-pencil me-1"></i>Edit Profile
         </a>

@@ -91,14 +91,6 @@ function isActive(string $path): string {
 
             <?php if ($isAdmin): ?>
             <li class="nav-item mt-1">
-                <span class="nav-section-label px-2">SERVICES</span>
-            </li>
-            <li class="nav-item">
-                <a href="<?= $rootPath ?? '' ?>modules/certificates/index.php" class="nav-link <?= isActive('certificates') ? 'active' : '' ?>">
-                    <i class="bi bi-file-earmark-text-fill me-2"></i> Certificates
-                </a>
-            </li>
-            <li class="nav-item mt-1">
                 <span class="nav-section-label px-2">SYSTEM</span>
             </li>
             <li class="nav-item">

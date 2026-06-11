@@ -34,9 +34,14 @@ include __DIR__ . '/../../includes/header.php';
 
 <div class="page-header">
     <h4><i class="bi bi-person-badge-fill me-2"></i>Barangay Officials</h4>
-    <a href="add.php" class="btn btn-success">
-        <i class="bi bi-person-plus-fill me-1"></i> Add Official
-    </a>
+    <div class="d-flex gap-2">
+        <button class="btn btn-outline-secondary" onclick="window.print()">
+            <i class="bi bi-printer-fill me-1"></i> Print
+        </button>
+        <a href="add.php" class="btn btn-success">
+            <i class="bi bi-person-plus-fill me-1"></i> Add Official
+        </a>
+    </div>
 </div>
 
 <!-- Officials Grid -->

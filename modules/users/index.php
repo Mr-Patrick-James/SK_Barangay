@@ -29,9 +29,14 @@ include __DIR__ . '/../../includes/header.php';
 
 <div class="page-header d-flex justify-content-between align-items-center mb-4">
     <h4 class="mb-0"><i class="bi bi-shield-lock-fill me-2 text-primary"></i>User Management</h4>
-    <a href="add.php" class="btn btn-primary">
-        <i class="bi bi-person-plus-fill me-2"></i>Add User
-    </a>
+    <div class="d-flex gap-2">
+        <button class="btn btn-outline-secondary" onclick="window.print()">
+            <i class="bi bi-printer-fill me-1"></i> Print
+        </button>
+        <a href="add.php" class="btn btn-primary">
+            <i class="bi bi-person-plus-fill me-2"></i>Add User
+        </a>
+    </div>
 </div>
 
 <div class="card content-card">

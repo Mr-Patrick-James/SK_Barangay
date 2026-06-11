@@ -145,9 +145,14 @@ include __DIR__ . '/../../includes/header.php';
 
 <div class="page-header">
     <h4><i class="bi bi-people me-2"></i>KK Youth Profiling</h4>
-    <a href="add.php" class="btn btn-primary">
-        <i class="bi bi-person-plus-fill me-2"></i>Add Youth Profile
-    </a>
+    <div class="d-flex gap-2">
+        <button class="btn btn-outline-secondary" onclick="window.print()">
+            <i class="bi bi-printer-fill me-1"></i> Print
+        </button>
+        <a href="add.php" class="btn btn-primary">
+            <i class="bi bi-person-plus-fill me-2"></i>Add Youth Profile
+        </a>
+    </div>
 </div>
 
 <!-- Filters -->

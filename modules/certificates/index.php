@@ -62,9 +62,27 @@ include __DIR__ . '/../../includes/header.php';
 
 <div class="page-header">
     <h4><i class="bi bi-file-earmark-text-fill me-2"></i>Certificates</h4>
-    <a href="issue.php" class="btn btn-warning">
-        <i class="bi bi-file-earmark-plus-fill me-1"></i> Issue Certificate
-    </a>
+    <div class="d-flex gap-2">
+        <div class="btn-group" role="group">
+            <button type="button" class="btn btn-outline-secondary dropdown-toggle" data-bs-toggle="dropdown">
+                <i class="bi bi-download me-1"></i> Export
+            </button>
+            <ul class="dropdown-menu">
+                <li><a class="dropdown-item" href="../../modules/export/export.php?type=certificates&format=pdf" target="_blank">
+                    <i class="bi bi-file-earmark-pdf me-2 text-danger"></i> Export as PDF
+                </a></li>
+                <li><a class="dropdown-item" href="../../modules/export/export.php?type=certificates&format=excel" target="_blank">
+                    <i class="bi bi-file-earmark-spreadsheet me-2 text-success"></i> Export as Excel
+                </a></li>
+                <li><a class="dropdown-item" href="../../modules/export/export.php?type=certificates&format=docx" target="_blank">
+                    <i class="bi bi-file-earmark-word me-2 text-primary"></i> Export as Word
+                </a></li>
+            </ul>
+        </div>
+        <a href="issue.php" class="btn btn-warning">
+            <i class="bi bi-file-earmark-plus-fill me-1"></i> Issue Certificate
+        </a>
+    </div>
 </div>
 
 <!-- Filters -->

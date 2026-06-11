@@ -35,9 +35,22 @@ include __DIR__ . '/../../includes/header.php';
 <div class="page-header">
     <h4><i class="bi bi-person-badge-fill me-2"></i>Barangay Officials</h4>
     <div class="d-flex gap-2">
-        <button class="btn btn-outline-secondary" onclick="window.print()">
-            <i class="bi bi-printer-fill me-1"></i> Print
-        </button>
+        <div class="btn-group" role="group">
+            <button type="button" class="btn btn-outline-secondary dropdown-toggle" data-bs-toggle="dropdown">
+                <i class="bi bi-download me-1"></i> Export
+            </button>
+            <ul class="dropdown-menu">
+                <li><a class="dropdown-item" href="../../modules/export/export.php?type=officials&format=pdf" target="_blank">
+                    <i class="bi bi-file-earmark-pdf me-2 text-danger"></i> Export as PDF
+                </a></li>
+                <li><a class="dropdown-item" href="../../modules/export/export.php?type=officials&format=excel" target="_blank">
+                    <i class="bi bi-file-earmark-spreadsheet me-2 text-success"></i> Export as Excel
+                </a></li>
+                <li><a class="dropdown-item" href="../../modules/export/export.php?type=officials&format=docx" target="_blank">
+                    <i class="bi bi-file-earmark-word me-2 text-primary"></i> Export as Word
+                </a></li>
+            </ul>
+        </div>
         <a href="add.php" class="btn btn-success">
             <i class="bi bi-person-plus-fill me-1"></i> Add Official
         </a>

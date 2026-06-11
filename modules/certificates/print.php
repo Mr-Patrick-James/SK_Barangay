@@ -56,7 +56,7 @@ include __DIR__ . '/../../includes/header.php';
             <div class="cert-republic"><?= PROVINCE ?></div>
             <div class="cert-republic"><?= MUNICIPALITY ?></div>
             <div class="cert-seal mt-2 mb-1">
-                <i class="bi bi-shield-fill-check" style="font-size:3.5rem;color:#1a3a5c"></i>
+                <img src="<?= $rootPath ?>assets/img/barangay.png" alt="Barangay Logo" style="width:80px;height:80px;object-fit:contain;">
             </div>
             <div class="cert-brgy-name"><?= BARANGAY_NAME ?></div>
             <div class="cert-location">Office of the Punong Barangay</div>

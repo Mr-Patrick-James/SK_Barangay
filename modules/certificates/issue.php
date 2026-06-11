@@ -103,18 +103,8 @@ include __DIR__ . '/../../includes/header.php';
 
                         <div class="col-md-6">
                             <label class="form-label">Purpose <span class="text-danger">*</span></label>
-                            <select name="purpose" class="form-select" id="purposeSelect" required>
-                                <option value="">-- Select Purpose --</option>
-                                <option value="Employment">Employment</option>
-                                <option value="Travel Abroad">Travel Abroad</option>
-                                <option value="Loan Application">Loan Application</option>
-                                <option value="School Enrollment">School Enrollment</option>
-                                <option value="Business Permit">Business Permit</option>
-                                <option value="Government Transaction">Government Transaction</option>
-                                <option value="Medical Assistance">Medical Assistance</option>
-                                <option value="Legal Purposes">Legal Purposes</option>
-                                <option value="Other">Other</option>
-                            </select>
+                            <input type="text" name="purpose" class="form-control" placeholder="e.g., Employment, Travel Abroad, Loan Application" value="<?= htmlspecialchars($data['purpose']) ?>" required>
+                            <small class="text-muted d-block mt-1">Common: Employment, Travel Abroad, Loan Application, School Enrollment, Business Permit, Government Transaction, Medical Assistance, Legal Purposes</small>
                         </div>
 
                         <div class="col-md-6">
